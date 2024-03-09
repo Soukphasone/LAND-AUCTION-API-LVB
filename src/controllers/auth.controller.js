@@ -6,14 +6,14 @@ const User = db.user;
 exports.login = async (req, res) => {
   try {
     if (!req.body.username && !req.body.password) {
-      return res.status(400).json({ message: `USERID_AND_PASSWORD_IS_EMPTY` });
+      return res.status(400).json({ message: `ກະລຸນາປ້ອນຂໍ້ມູນໃຫ້ຄົບຖ້ວນ` });
     }
     const findBy = {};
     findBy.username = req.body.username;
     findBy.password = req.body.password;
     const _user = await User.findOne({ username: req.body.username, password: req.body.password }).exec();
     if (!_user) {
-      return res.status(400).json({ message: `INVALID_USERNAME_OR_PASSWORD` });
+      return res.status(400).json({ message: `ຊື່ ຫຼື ລະຫັດບໍ່ຖືກຕ້ອງ` });
     }
     const accessToken = jwt.sign(
       {
