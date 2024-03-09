@@ -45,12 +45,12 @@ exports.user = async (req, res) => {
 exports.userCreate = async (req, res) => {
   try {
     if (!req.body.username && !req.body.password) {
-      return res.status(400).json({ message: `USERID_AND_PASSWORD_IS_EMPTY` });
+      return res.status(400).json({ message: `ກະລຸນາປ້ອນຂໍ້ມູນໃຫ້ຄົບຖ້ວນ` });
     }
 
-    const _checked_user = await User.findOne({ username: req.body.username });
+    const _checked_user = await User.findOne({ username: req.body.username }).exec();;
     if (_checked_user) {
-      return res.status(400).json({ message: `HAVED REGISTERED` });
+      return res.status(400).json({ message: `ຊື່ນີ້ໄດ້ເຄີຍລົງທະບຽນແລ້ວ` });
     }
     const _createUser = await User.create({
       ...req.body,
