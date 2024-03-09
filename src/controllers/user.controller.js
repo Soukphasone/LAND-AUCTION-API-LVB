@@ -44,10 +44,18 @@ exports.user = async (req, res) => {
 
 exports.userCreate = async (req, res) => {
   try {
-    const _userCreate = await User.create({
+    if (!req.body.username && !req.body.password) {
+      return res.status(400).json({ message: `USERID_AND_PASSWORD_IS_EMPTY` });
+    }
+
+    const _checked_user = await User.findOne({ username: req.body.username });
+    if (_checked_user) {
+      return res.status(400).json({ message: `HAVED REGISTERED` });
+    }
+    const _createUser = await User.create({
       ...req.body,
     });
-    res.status(200).json(_userCreate);
+    res.status(200).json(_createUser);
   } catch (err) {
     console.log(err);
     return res.status(500).json({
