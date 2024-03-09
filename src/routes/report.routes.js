@@ -1,10 +1,8 @@
 const controller = require("../controllers/report.controller");
-// const { verifyToken } = require("../middlewares");
+const { verifyToken } = require("../middlewares");
 
 module.exports = async (app) => {
-  app.get("/reportamout", controller.ReportAmout);
-  app.post("/package", controller.packageCreate);
-  app.get("/package/:id", controller.package);
-  app.put("/package/:id", controller.packageUpdate);
-  app.delete("/package/:id", controller.packageDelete);
+  app.get("/reportamout/day", controller.ReportAmoutDay);
+  app.get("/reportamout/month", controller.ReportAmountThisMonth);
+  app.get("/reportamout/year", controller.ReportAmountThisYear);
 };

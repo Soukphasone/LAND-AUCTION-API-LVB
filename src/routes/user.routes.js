@@ -1,11 +1,10 @@
 const controller = require("../controllers/user.controller");
-// const { verifyToken } = require("../middlewares");
+const { verifyToken } = require("../middlewares");
 
 module.exports = async (app) => {
-  app.get("/users", controller.users);
-  app.post("/user", controller.userCreate);
-  app.get("/user/:id", controller.user);
-  app.put("/user/:id", controller.userUpdate);
-  app.delete("/user/:id", controller.userDelete);
-  app.post("/invite-create-user", controller.inviteCreateStore);
+  app.get("/users", verifyToken,controller.users);
+  app.post("/user", verifyToken,controller.userCreate);
+  app.get("/user/:id", verifyToken,controller.user);
+  app.put("/user/:id", verifyToken,controller.userUpdate);
+  app.delete("/user/:id", verifyToken,controller.userDelete);
 };

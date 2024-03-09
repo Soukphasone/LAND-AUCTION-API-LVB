@@ -1,24 +1,51 @@
 const db = require("../models");
 const Inc_Exp = db.inc_exp;
-exports.ReportAmout = async (req, res) => {
+const today = new Date();
+exports.ReportAmoutDay = async (req, res) => {
   try {
-    // const { status, userId } = req.query;
-    const _amountIcm_Exp = await Inc_Exp.count().exec();
-    res.status(200).json({
-      totalamout: _amountIcm_Exp,
-    });
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({
-      message: `Internal Server Error:${err}`,
-      code: "INTERNAL_SERVER_ERROR",
-    });
-  }
-};
-exports.package = async (req, res) => {
-  try {
-    const _package = await Package.findById({ _id: req.params.id });
-    res.status(200).json(_package);
+    const startOfDay = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate()
+    );
+    const endOfDay = new Date(
+      today.getFullYear(),
+      today.getMonth(),
+      today.getDate() + 1
+    );
+    const _reportDay = await Inc_Exp.aggregate([
+      {
+        $match: {
+          date: { $gte: startOfDay, $lt: endOfDay },
+        },
+      },
+      {
+        $group: {
+          _id: "$user_id",
+          Total_Inc: {
+            $sum: {
+              $cond: [{ $eq: ["$type", "ລາຍຮັບ"] }, "$amount_incomes_exp", 0],
+            },
+          },
+          Total_Exp: {
+            $sum: {
+              $cond: [{ $eq: ["$type", "ລາຍຈ່າຍ"] }, "$amount_incomes_exp", 0],
+            },
+          },
+        },
+      },
+    ]);
+    if (!_reportDay || _reportDay.length === 0) {
+      return res.status(200).json([
+        {
+          _id: "",
+          Total_Inc: 0,
+          Total_Exp: 0,
+        },
+      ]);
+    }
+
+    res.status(200).json(_reportDay);
   } catch (err) {
     console.log(err);
     return res.status(500).json({
@@ -28,34 +55,42 @@ exports.package = async (req, res) => {
   }
 };
 
-exports.packageCreate = async (req, res) => {
+exports.ReportAmountThisMonth = async (req, res) => {
   try {
-    const _packageCreate = await Package.create({
-      ...req.body,
-    });
-    res.status(200).json(_packageCreate);
-  } catch (err) {
-    console.log(err);
-    return res.status(500).json({
-      message: `Internal Server Error:${err}`,
-      code: "INTERNAL_SERVER_ERROR",
-    });
-  }
-};
-exports.packageUpdate = async (req, res) => {
-  try {
-    await Package.findOneAndUpdate(
-      { _id: req.params.id },
+    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    const endOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0); // Get the last day of the current month
+    const _reportMonth = await Inc_Exp.aggregate([
       {
-        $set: {
-          ...req.body,
-          createdOut: new Date(),
-          // updatedBy: req.payload.id,
+        $match: {
+          date: { $gte: startOfMonth, $lt: endOfMonth },
         },
-      }
-    );
-    const _package = await Package.findOne({ _id: req.params.id });
-    res.status(200).json(_package);
+      },
+      {
+        $group: {
+          _id: "$user_id",
+          Total_Inc: {
+            $sum: {
+              $cond: [{ $eq: ["$type", "ລາຍຮັບ"] }, "$amount_incomes_exp", 0],
+            },
+          },
+          Total_Exp: {
+            $sum: {
+              $cond: [{ $eq: ["$type", "ລາຍຈ່າຍ"] }, "$amount_incomes_exp", 0],
+            },
+          },
+        },
+      },
+    ]);
+    if (!_reportMonth || _reportMonth.length === 0) {
+      return res.status(200).json([
+        {
+          _id: "",
+          Total_Inc: 0,
+          Total_Exp: 0,
+        },
+      ]);
+    }
+    res.status(200).json(_reportMonth);
   } catch (err) {
     console.log(err);
     return res.status(500).json({
@@ -64,15 +99,47 @@ exports.packageUpdate = async (req, res) => {
     });
   }
 };
-exports.packageDelete = async (req, res) => {
+
+exports.ReportAmountThisYear = async (req, res) => {
   try {
-    await Package.remove({
-      _id: req.params.id,
-    });
-    return res.status(200).json({ message: "Success!" });
+    const startOfYear = new Date(today.getFullYear(), 0, 1); // January 1st of the current year
+    const endOfYear = new Date(today.getFullYear() + 1, 0, 1); // January 1st of the next year
+    const _reportYear = await Inc_Exp.aggregate([
+      {
+        $match: {
+          date: { $gte: startOfYear, $lt: endOfYear },
+        },
+      },
+      {
+        $group: {
+          _id: "$user_id",
+          Total_Inc: {
+            $sum: {
+              $cond: [{ $eq: ["$type", "ລາຍຮັບ"] }, "$amount_incomes_exp", 0],
+            },
+          },
+          Total_Exp: {
+            $sum: {
+              $cond: [{ $eq: ["$type", "ລາຍຈ່າຍ"] }, "$amount_incomes_exp", 0],
+            },
+          },
+        },
+      },
+    ]);
+    if (!_reportYear || _reportYear.length === 0) {
+      return res.status(200).json([
+        {
+          _id: "",
+          Total_Inc: 0,
+          Total_Exp: 0,
+        },
+      ]);
+    }
+    res.status(200).json(_reportYear);
   } catch (err) {
+    console.log(err);
     return res.status(500).json({
-      message: `Internal Server Error:${err}`,
+      message: `Internal Server Error: ${err}`,
       code: "INTERNAL_SERVER_ERROR",
     });
   }

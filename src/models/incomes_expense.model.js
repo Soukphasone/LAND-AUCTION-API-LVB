@@ -7,10 +7,7 @@ const incomes_Expense = mongoose.db.model(
     user_id:{
       type: Schema.Types.ObjectId
     },
-    amount_incomes: {
-      type: Number,
-  },
-    amount_expenses: {
+    amount_incomes_exp: {
       type: Number,
   },
   description: {
