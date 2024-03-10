@@ -5,7 +5,7 @@ const User = db.user;
 
 exports.login = async (req, res) => {
   try {
-    if (!req.body.username && !req.body.password) {
+    if (!req.body.username || !req.body.password) {
       return res.status(400).json({ message: `ກະລຸນາປ້ອນຂໍ້ມູນໃຫ້ຄົບຖ້ວນ` });
     }
     const findBy = {};

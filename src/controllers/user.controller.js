@@ -44,7 +44,7 @@ exports.user = async (req, res) => {
 
 exports.userCreate = async (req, res) => {
   try {
-    if (!req.body.username && !req.body.password) {
+    if (!req.body.username || !req.body.password) {
       return res.status(400).json({ message: `ກະລຸນາປ້ອນຂໍ້ມູນໃຫ້ຄົບຖ້ວນ` });
     }
 
