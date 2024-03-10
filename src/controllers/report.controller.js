@@ -35,16 +35,6 @@ exports.ReportAmoutDay = async (req, res) => {
         },
       },
     ]);
-    if (!_reportDay || _reportDay.length === 0) {
-      return res.status(200).json([
-        {
-          _id: "",
-          Total_Inc: 0,
-          Total_Exp: 0,
-        },
-      ]);
-    }
-
     res.status(200).json(_reportDay);
   } catch (err) {
     console.log(err);
@@ -81,15 +71,6 @@ exports.ReportAmountThisMonth = async (req, res) => {
         },
       },
     ]);
-    if (!_reportMonth || _reportMonth.length === 0) {
-      return res.status(200).json([
-        {
-          _id: "",
-          Total_Inc: 0,
-          Total_Exp: 0,
-        },
-      ]);
-    }
     res.status(200).json(_reportMonth);
   } catch (err) {
     console.log(err);
@@ -126,15 +107,6 @@ exports.ReportAmountThisYear = async (req, res) => {
         },
       },
     ]);
-    if (!_reportYear || _reportYear.length === 0) {
-      return res.status(200).json([
-        {
-          _id: "",
-          Total_Inc: 0,
-          Total_Exp: 0,
-        },
-      ]);
-    }
     res.status(200).json(_reportYear);
   } catch (err) {
     console.log(err);
