@@ -1,8 +1,9 @@
 const mongoose = require("./mongoose");
-const inc_exp = require("./incomes_expense.model");
-const user = require("./user.model");
+const auction = require("./auction.model");
+const province = require("./province.model");
 const db = {};
 db.mongoose = mongoose;
-db.inc_exp = inc_exp;
-db.user = user;
+db.auction = auction;
+db.province = province;
+db.address = mongoose.db.collection("laos-address");
 module.exports = db;

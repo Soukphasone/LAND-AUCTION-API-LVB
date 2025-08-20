@@ -1,37 +1,42 @@
-const hash = require("../helpers/encrypt");
 const jwt = require("jsonwebtoken");
-const db = require("../models");
-const User = db.user;
+const { checkUser } = require("../helpers/check_user");
+const { handleResponse } = require("../helpers/handler.response");
 
 exports.login = async (req, res) => {
   try {
-    if (!req.body.username || !req.body.password) {
-      return res.status(400).json({ message: `ກະລຸນາປ້ອນຂໍ້ມູນໃຫ້ຄົບຖ້ວນ` });
+    const user = req.body.USER_NAME;
+    const password = req.body.PASSWORD;
+    if (!user || !password) {
+      return res
+        .status(400)
+        .json(handleResponse("1", 400, "PLEASE ENTER USERNAME AND PASSWORD"));
     }
-    const findBy = {};
-    findBy.username = req.body.username;
-    findBy.password = req.body.password;
-    const _user = await User.findOne({ username: req.body.username, password: req.body.password }).exec();
-    if (!_user) {
-      return res.status(400).json({ message: `ຊື່ ຫຼື ລະຫັດບໍ່ຖືກຕ້ອງ` });
+    const _res = await checkUser(user, password);
+    if (!_res.user_data) {
+      return res
+        .status(400)
+        .json(handleResponse("1", 400, "CORRECT USERNAME OR PASSWORD"));
     }
-    const accessToken = jwt.sign(
+    const TOKEN = jwt.sign(
       {
-        id: _user._id,
-        username: _user.username,
-        role: _user.role,
-        status: _user.status,
+        USER: user,
+        PASSWORD: password,
       },
       process.env.SECRET_KEY,
       {
-        expiresIn: "24h",
+        expiresIn: "1h",
       }
     );
-
-    return res.status(200).json({ accessToken, data: _user });
+    return res
+      .status(200)
+      .json(
+        handleResponse("0", 200, "SUCCESS", { TOKEN, DATA: _res.user_data })
+      );
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: `SERVER_IS_PROBLEM: ${error}` });
-    return;
+    return res
+      .status(500)
+      .json(handleResponse("2", 500, "SERVER_IS_PROBLEM", error));
   }
 };

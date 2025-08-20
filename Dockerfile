@@ -1,15 +1,20 @@
+# Use official Node.js image
+FROM node:20-alpine
 
-FROM node:14
-
+# Create app directory
 WORKDIR /usr/src/app
 
+# Copy package files
 COPY package*.json ./
 
-
+# Install dependencies
 RUN npm install
 
-RUN npm install -g nodemon 
-
+# Copy source code
 COPY . .
 
-CMD [ "npm", "start" ]
+# Expose the port
+EXPOSE 8001
+
+# Start the application
+CMD ["node", "app.js"]

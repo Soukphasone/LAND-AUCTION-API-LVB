@@ -1,8 +1,26 @@
-version: "3"
+version: '3.9'
+
 services:
-  api-selfordering-sevice:
-    container_name: api-unee-server-container
-    restart: always
+  app:
     build: .
     ports:
-      - "9100:9100"
+      - "8000:8000"
+    env_file:
+      - .env   # Load variables from .env file
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017/LAND-AUCTION
+    depends_on:
+      - mongo
+    restart: unless-stopped
+
+  mongo:
+    image: mongo:6.0
+    ports:
+      - "28017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    environment:
+      - MONGO_INITDB_DATABASE=LAND-AUCTION
+
+volumes:
+  mongodb_data:
