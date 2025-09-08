@@ -2,10 +2,12 @@ const db = require("../models");
 const DB = db.auction;
 const DB_province = db.province;
 const DB_address = db.address;
+const { encryptData, decryptData } = require("../helpers/encrypt_decrypt");
 const { handleResponse } = require("../helpers/handler.response");
+const { iconsView } = require("../helpers/image_manager");
 exports.auctionView = async (req, res) => {
   try {
-    const search = req.body;
+    const search = decryptData(req.body.DATA);
     const query = {};
     if (search.AREA_MIN && search.AREA_MAX) {
       query["LAND_DETAILS.AREA"] = {
@@ -38,7 +40,6 @@ exports.auctionView = async (req, res) => {
           $regex: search[key],
           $options: "i",
         };
-      } else {
         query[`LAND_DETAILS.${key}`] = {
           $regex: search[key],
           $options: "i",
@@ -46,10 +47,10 @@ exports.auctionView = async (req, res) => {
       }
     }
     const _res = await DB.find(query);
-    res.status(200).json(handleResponse("0", 200, "SUCCESS", _res));
+    return res.json(handleResponse("0", 200, "SUCCESS", encryptData(_res)));
   } catch (err) {
     console.error(err);
-    return res.status(500).json(handleResponse("0", 500, "FAIL", err.message));
+    return res.status(500).json(handleResponse("2", 500, "FAIL", err.message));
   }
 };
 exports.auctionViewDetail = async (req, res) => {
@@ -76,7 +77,6 @@ exports.auctionViewDetail = async (req, res) => {
     return res.status(500).json(handleResponse("0", 500, "FAIL", err.message));
   }
 };
-
 exports.auctionSelectVillage = async (req, res) => {
   try {
     const _res = await DB.aggregate([
@@ -287,7 +287,7 @@ exports.provincesView = async (req, res) => {
 };
 exports.laosAddress = async (req, res) => {
   try {
-    const PROVINCE_ID =  req.body.PROVINCE_ID || "";
+    const PROVINCE_ID = req.body.PROVINCE_ID || "";
     const DISTRICT_ID = req.body.DISTRICT_ID || "";
     const VILLAGE_ID = req.body.VILLAGE_ID || "";
     const query = {};
@@ -298,6 +298,36 @@ exports.laosAddress = async (req, res) => {
     return res.status(200).json(handleResponse("0", 200, "SUCCESS", _res));
   } catch (err) {
     console.error(err);
+    return res.status(500).json(handleResponse("0", 500, "FAIL", err.message));
+  }
+};
+exports.icons = async (req, res) => {
+  try {
+    const _res = await iconsView();
+    res.status(200).json(handleResponse("0", 200, "SUCCESS", _res));
+  } catch (err) {
+    return res.status(500).json(handleResponse("0", 500, "FAIL", err.message));
+  }
+};
+exports.iconsImgAdd = async (req, res) => {
+  try {
+    const profileURL = req.files["PROFILE_IMAGE"]?.[0]?.filename || null;
+    const detailsURL = (req.files["DETAILS_IMAGE"] || []).map((file) => ({
+      url: file.filename,
+    }));
+    // const _res = await DB.create({
+    //   LAND_DETAILS: {
+    //     ...req.body,
+    //     IMAGES: {
+    //       PROFILE_IMAGE: profileURL,
+    //       DETAILS_IMAGE: detailsURL,
+    //     },
+    //     CONTACT: { ...req.body },
+    //   },
+    //   ...req.body,
+    // });
+    res.status(200).json(handleResponse("0", 200, "SUCCESS", _res));
+  } catch (err) {
     return res.status(500).json(handleResponse("0", 500, "FAIL", err.message));
   }
 };

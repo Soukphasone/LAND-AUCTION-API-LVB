@@ -1,5 +1,5 @@
 const controller = require("../controllers/auction.controller");
-const upload = require("../middlewares/upload");
+const { upload_auction } = require("../middlewares/upload");
 const { verifyToken } = require("../middlewares");
 
 module.exports = async (app) => {
@@ -8,7 +8,7 @@ module.exports = async (app) => {
   app.post(
     "/auction/add",
     verifyToken,
-    upload.fields([
+    upload_auction.fields([
       { name: "PROFILE_IMAGE", maxCount: 1 },
       { name: "DETAILS_IMAGE", maxCount: 6 },
     ]),
@@ -18,7 +18,7 @@ module.exports = async (app) => {
   app.post(
     "/auction/update",
     verifyToken,
-    upload.fields([
+    upload_auction.fields([
       { name: "PROFILE_IMAGE", maxCount: 1 },
       { name: "DETAILS_IMAGE", maxCount: 6 },
     ]),
@@ -32,4 +32,5 @@ module.exports = async (app) => {
   app.post("/select-all", controller.auctionSelect);
   app.post("/type", controller.auctionSelectType);
   app.post("/laos/address", controller.laosAddress);
+  app.post("/icons", controller.icons);
 };

@@ -32,7 +32,16 @@ async function cleanUpUnlinkedImages() {
     console.error("Error during cleanup:", err.message);
   }
 }
+async function iconsView() {
+  try {
+    const icons = fs.readdirSync(path.join(__dirname, "../../uploads/icons"));
+    return icons;
+  } catch (err) {
+    console.error("Error", err.message);
+  }
+}
 
 module.exports = {
   cleanUpUnlinkedImages,
+  iconsView,
 };

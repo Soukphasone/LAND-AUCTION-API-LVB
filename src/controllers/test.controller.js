@@ -1,19 +1,22 @@
-const db = require("../models");
 const { encryptData, decryptData } = require("../helpers/encrypt_decrypt");
 exports.Test = async (req, res) => {
   try {
-    const encrypted = req.body.DATA;
-    const testData = { data: "TEST" };
+    console.log(req.body);
+    // const encrypted = req.body.DATA;
+    const testData = { data: "TEST_OK" };
     const _res = encryptData(testData);
     const decrypted = decryptData(req.body.DATA);
+    console.log("data", decrypted);
     if (decrypted) {
-      res.status(200).json({
-        encrypted,
-        decrypted,
-        ORIGINAL_DATA: testData,
-        DATA: _res,
+      return res.status(200).json({
+        ORIGINAL_DATA: decrypted,
+        DATA_SEND_FROM_API: {
+          data_1: testData.data,
+          data_2: _res
+        },
       });
     }
+    return res.status(400).json("NULL");
   } catch (err) {
     console.error(err);
     res.status(500).json({
